@@ -1,0 +1,9 @@
+.screen {
+    width: 100%;
+    padding: 10px 5px;
+    text-align: right;
+    margin-bottom: 20px;
+    background: #1f1f1f;
+    color: #FFFFFF;
+    border: none;
+}
