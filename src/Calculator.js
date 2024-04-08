@@ -2,20 +2,14 @@ import Screen from "./components/Screen/Screen";
 import Body from "./components/Body/Body";
 import './Calculator.css'
 import { useState } from "react";
-import { act } from "react-dom/test-utils";
 
 const Calculator = (props) => {
 
     const [value, setValue] = useState('0');
-
-    const isMaxLength = () => {
-        return value.length === 16;
-    }
-
-    const isSecondDot = (button) => {
-        return value.includes(',') && button === ','
-    }
-
+    const [num1, setNum1] = useState(null);
+    const [action, setAction] = useState(null);
+    const [isCounting, setIsCounting] = useState(false);
+    
     const calculateActions = {
         divide: function(a, b) {
             return a / b
@@ -31,43 +25,58 @@ const Calculator = (props) => {
         },
     }
 
-    let [num1, setNum1] = useState(null);
-    let [action, setAction] = useState(null);
-    let [isCounting, setIsCounting] = useState(false)
+    const isMaxLength = () => {
+        return value.length === 16;
+    }
 
-    const handler = (e) => {
-        if(e.target.name === 'clear') {
-            setValue('0');
-            return;
+    const isSecondDot = (button) => {
+        return value.includes(',') && button === ','
+    }
+
+
+    const setValueOnIntClick = (buttonInt) => {
+        if(value === '0' || isCounting) {
+            setValue(buttonInt);
+            setIsCounting(false);
+        } else {
+            setValue(value + buttonInt);
         }
+    }
+
+    const setDataOnActionClick = (action) => {
+        setNum1(value);
+        setIsCounting(true)
+        setAction(action);
+    }
+
+
+    const buttonClickHandler = (e) => {
         if(isMaxLength()) return;
         if(e.target.textContent === '.' && isSecondDot(e.target.textContent)) return;
-        if(e.target.name === 'int') {
-
-            if(value === '0' || isCounting) {
-                setValue(e.target.textContent);
-                setIsCounting(false);
-            } else {
-                setValue(value + e.target.textContent);
+        switch(e.target.name) {
+            case 'clear': {
+                setValue('0');
+                break;
             }
-
-        } else {
-            setNum1(value);
-            setIsCounting(true)
-
-            if(e.target.name !== 'result') {
-                setAction(e.target.name);
-            } else {
-                setValue(calculateActions[action](num1, value))
+            case 'int': {
+                setValueOnIntClick(e.target.textContent);
+                break;
             }
-
+            case 'result': {
+                setValue(calculateActions[action](+num1, +value));
+                break;
+            }
+            default: {
+                setDataOnActionClick(e.target.name);
+                break
+            }
         }
     }
 
     return (
         <div className="calculator">
             <Screen value={value}/>
-            <Body buttonHandler={handler}/>
+            <Body buttonHandler={buttonClickHandler}/>
         </div>
     );
 }
