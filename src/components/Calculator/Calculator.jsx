@@ -1,5 +1,5 @@
-import Screen from "./components/Screen/Screen";
-import Body from "./components/Body/Body";
+import Screen from "../Screen/Screen";
+import Body from "../Body/Body";
 import './Calculator.css'
 import { useState } from "react";
 
@@ -9,7 +9,7 @@ const Calculator = (props) => {
     const [num1, setNum1] = useState(null);
     const [action, setAction] = useState(null);
     const [isCounting, setIsCounting] = useState(false);
-    
+
     const calculateActions = {
         divide: function(a, b) {
             return a / b
@@ -23,6 +23,9 @@ const Calculator = (props) => {
         sum: function(a, b) {
             return a + b
         },
+        result: function(action, a, b) {
+            return this[action](a, b);
+        }
     }
 
     const isMaxLength = () => {
@@ -30,7 +33,7 @@ const Calculator = (props) => {
     }
 
     const isSecondDot = (button) => {
-        return value.includes(',') && button === ','
+        return value.includes('.') && button === '.'
     }
 
 
@@ -51,6 +54,7 @@ const Calculator = (props) => {
 
 
     const buttonClickHandler = (e) => {
+        
         if(isMaxLength()) return;
         if(e.target.textContent === '.' && isSecondDot(e.target.textContent)) return;
         switch(e.target.name) {
@@ -63,12 +67,20 @@ const Calculator = (props) => {
                 break;
             }
             case 'result': {
-                setValue(calculateActions[action](+num1, +value));
+                action ? setValue(calculateActions.result(action, +num1, +value)) : setValue(value)
+                break;
+            }
+            case 'opposite': {
+                setValue(+value * -1);
+                break;
+            }
+            case 'percent': {
+                setValue(+value * 0.01);
                 break;
             }
             default: {
                 setDataOnActionClick(e.target.name);
-                break
+                break;
             }
         }
     }

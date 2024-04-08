@@ -5,4 +5,9 @@
     top: 50%;
     left: 50%;
     translate: -50% -50%;
+
+    border: 1px solid black;
+    border-radius: 15px;
+    padding: 20px;
+    background: black;
 }
